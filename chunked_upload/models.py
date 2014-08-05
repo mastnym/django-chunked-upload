@@ -19,8 +19,7 @@ def generate_upload_id():
 
 
 def generate_filename(instance, filename):
-    filename = os.path.join(UPLOAD_PATH, instance.upload_id + '.part')
-    return time.strftime(filename)
+    return instance.get_upload_path(filename)
 
 
 class ChunkedUpload(models.Model):
@@ -29,12 +28,16 @@ class ChunkedUpload(models.Model):
     file = models.FileField(max_length=255, upload_to=generate_filename,
                             storage=STORAGE)
     filename = models.CharField(max_length=255)
-    user = models.ForeignKey(AUTH_USER_MODEL, related_name='chunked_uploads')
+    user = models.ForeignKey(AUTH_USER_MODEL, related_name='%(app_label)s_%(class)s_chunked_uploads')
     offset = models.PositiveIntegerField(default=0)
     created_on = models.DateTimeField(auto_now_add=True)
     status = models.PositiveSmallIntegerField(choices=CHUNKED_UPLOAD_CHOICES,
                                               default=UPLOADING)
     completed_on = models.DateTimeField(null=True, blank=True)
+
+    def get_upload_path(self, filename):
+        filename = os.path.join(UPLOAD_PATH, instance.upload_id + '.part')
+        return time.strftime(filename)
 
     @property
     def expires_on(self):
