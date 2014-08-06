@@ -36,7 +36,7 @@ class ChunkedUpload(models.Model):
     completed_on = models.DateTimeField(null=True, blank=True)
 
     def get_upload_path(self, filename):
-        filename = os.path.join(UPLOAD_PATH, instance.upload_id + '.part')
+        filename = os.path.join(UPLOAD_PATH, self.upload_id + '.part')
         return time.strftime(filename)
 
     @property
